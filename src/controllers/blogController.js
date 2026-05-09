@@ -1,6 +1,6 @@
 const prisma = require('../prisma/client')
 
-/* ---------------- CREATE BLOG ---------------- */
+
 const createBlog = async (req, res) => {
   const { title, content } = req.body
 
@@ -15,16 +15,19 @@ const createBlog = async (req, res) => {
   res.json(blog)
 }
 
-/* ---------------- GET ALL BLOGS ---------------- */
 const getBlogs = async (req, res) => {
   const blogs = await prisma.blog.findMany({
-    include: { user: true }
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      userId: true
+    }
   })
 
   res.json(blogs)
 }
 
-/* ---------------- GET SINGLE BLOG ---------------- */
 const getBlogById = async (req, res) => {
   const id = parseInt(req.params.id)
 
@@ -40,7 +43,7 @@ const getBlogById = async (req, res) => {
   res.json(blog)
 }
 
-/* ---------------- UPDATE BLOG ---------------- */
+
 const updateBlog = async (req, res) => {
   const id = parseInt(req.params.id)
   const { title, content } = req.body
@@ -53,7 +56,7 @@ const updateBlog = async (req, res) => {
     return res.status(404).json({ message: "Blog not found" })
   }
 
-  // ownership check (IMPORTANT)
+  
   if (blog.userId !== req.user.id) {
     return res.status(403).json({ message: "Not allowed" })
   }
@@ -66,7 +69,7 @@ const updateBlog = async (req, res) => {
   res.json(updatedBlog)
 }
 
-/* ---------------- DELETE BLOG ---------------- */
+
 const deleteBlog = async (req, res) => {
   const id = parseInt(req.params.id)
 
@@ -78,7 +81,7 @@ const deleteBlog = async (req, res) => {
     return res.status(404).json({ message: "Blog not found" })
   }
 
-  // ownership check
+  
   if (blog.userId !== req.user.id) {
     return res.status(403).json({ message: "Not allowed" })
   }

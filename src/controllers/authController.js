@@ -59,7 +59,9 @@ const login = async (req, res) => {
     )
 
     res.cookie("token", token, {
-      httpOnly: true
+      httpOnly: true,
+      sameSite: "lax",  
+      secure: false 
     })
 
     res.json({ message: "Login successful" })
@@ -71,17 +73,22 @@ const login = async (req, res) => {
   }
 }
 
+const me = (req, res) => {
+  res.json({ userId: req.user.id })
+}
+
 const logout = async (req, res) => {
-    res.clearCookie("token", {
-      httpOnly: true,
-      sameSite: "lax"
-    })
-  
-    res.json({ message: "Logged out successfully" })
-  }
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax"
+  })
+
+  res.json({ message: "Logged out successfully" })
+}
 
 module.exports = {
   register,
   login,
-  logout
+  logout,
+  me  
 }
